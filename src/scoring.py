@@ -1,7 +1,8 @@
 from discord.ext import commands
 from src.rules import apply_rules
-from src.storage import add_user, get_user_score, update_user_score
+from src.storage import add_user, get_user_score, update_user_score, get_highest_and_lowest
 from config import SOCIAL_CREDIT_START
+import random
 
 class ScoringCog(commands.Cog):
     def __init__(self, bot, ai_client):
@@ -30,10 +31,21 @@ class ScoringCog(commands.Cog):
         new_score = old_score + score_change
         print("New User Score:", new_score)
 
+        min_score, max_score = get_highest_and_lowest()
+        print(f"Max Score: {max_score}, Min Score: {min_score}")
 
         update_user_score(user.id, new_score) 
 
-        if score_change >= 5 or score_change <= -5:
+        if new_score > max_score[1] and user.name != max_score[0]:
+            prompt = f"{user.name} has just surpassed {max_score[0]} and now has the MOST social credit points in the server!!"
+            response = await self.ai_chat_manager.chat_with_history(prompt)
+            await message.channel.send(response)
+        elif new_score < min_score[1] and user.name != min_score[0]:
+            prompt = f"{user.name} has just surpassed {min_score[0]} and now has the LEAST social credit points in the server!!"
+            response = await self.ai_chat_manager.chat_with_history(prompt)
+            await message.channel.send(response)
+
+        if score_change >= 15 or score_change <= -15 or random.randint(1,20) == 1:
             prompt = f"{user.name}: {message.content}, message score: {score_change}"
             response = await self.ai_chat_manager.chat_with_history(prompt)
             await message.channel.send(response)

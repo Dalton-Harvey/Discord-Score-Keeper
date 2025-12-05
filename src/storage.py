@@ -85,6 +85,17 @@ def get_scores():
     scores = load_json(SCORES_PATH)
     return scores
 
+def get_highest_and_lowest():
+    scores = load_json(SCORES_PATH)
+
+    max_user_id = max(scores, key=lambda uid: scores[uid]['score'])
+    min_user_id = min(scores, key=lambda uid: scores[uid]['score'])
+
+    max_user = (scores[max_user_id]['name'], scores[max_user_id]['score'])
+    min_user = (scores[min_user_id]['name'], scores[min_user_id]['score'])
+
+    return min_user, max_user
+
 
 # Chat Hisotry Storage Management
 

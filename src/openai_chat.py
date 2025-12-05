@@ -67,7 +67,7 @@ class OpenAIManager:
         chat_history = update_chat_history(chat_question)
 
         messagePopped = False
-        while num_tokens_from_messages(chat_history) > 2500:
+        while num_tokens_from_messages(chat_history) > 750:
             chat_history.pop(1)
             messagePopped = True
             print("Popped Message!")

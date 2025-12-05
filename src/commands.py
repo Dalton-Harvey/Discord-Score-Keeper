@@ -1,3 +1,5 @@
+import discord
+import random
 from discord.ext import commands
 from src.storage import get_users_score, get_user_score, update_user_score
 
@@ -44,9 +46,10 @@ class CommandsCog(commands.Cog):
     @commands.cooldown(rate=1, per=300, type=commands.BucketType.user) 
     async def my_score(self, ctx):
         user_id = ctx.author.id
+        user_name = ctx.author.name
 
         # Get current score
-        current_score = get_user_score(user_id)
+        current_score = get_user_score(user_id, user_name)
 
         # Deduct -3 points for using the command
         new_score = current_score - 3
@@ -56,3 +59,26 @@ class CommandsCog(commands.Cog):
         name = ctx.author.display_name.replace("@", "@\u200b")
 
         await ctx.send(f"{name}, your current score is **{new_score}** points.")
+
+
+    @commands.command(name="Report")
+    @commands.cooldown(rate=1, per=300, type=commands.BucketType.user)
+    async def report_user(self, ctx, member: discord.Member, *, reason: str="No reason provided"):
+
+        invoker_name = ctx.author.name
+        invoker_id = ctx.author.id
+        reported_id = member.id
+        reported_name = member.name
+        
+        #Getting old user score and user reports equal to a -2 change
+        old_score = get_user_score(reported_id, reported_name)
+        new_score = old_score - 2
+
+        update_user_score(reported_id, new_score)
+        
+        if random.randint(1,10) == 1:
+            prompt =f"The User {invoker_name} has just reported {reported_name}."
+            response = await self.ai_chat_manager.chat_with_history(prompt)
+            await ctx.send(response)
+        else:
+            await ctx.send(f"Reported {reported_name} for reason: {reason}.")
