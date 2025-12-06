@@ -82,3 +82,10 @@ class CommandsCog(commands.Cog):
             await ctx.send(response)
         else:
             await ctx.send(f"Reported {reported_name} for reason: {reason}.")
+
+
+    @commands.command(name="Intro")
+    async def introduction(self, ctx):
+        prompt = "I want you to introduce yourself to the server not just one person the entire server"
+        response = await self.ai_chat_manager.chat_no_history(prompt)
+        await ctx.send(response)
