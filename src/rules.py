@@ -1,4 +1,7 @@
 import re
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+analyzer = SentimentIntensityAnalyzer() 
 
 NEGATIVE_WORDS = {
     "fuck": -1, 
@@ -71,6 +74,33 @@ POSITIVE_WORDS = {
     "haha":1,
 }
 
+
+def vader_score(message, max_points=25, max_words=30):
+    """
+    Calculate a sentiment-based score for a message.
+    Short messages have reduced impact; long messages get full effect.
+    """
+    content = message.lower()
+    words = content.split()
+
+    # Length factor: capped at max_words
+    length_factor = min(len(words) / max_words, 1)
+
+    # Get compound sentiment (-1 to 1)
+    sentiment = analyzer.polarity_scores(content)['compound']
+
+    # Scale by max_points and length
+    raw_score = sentiment * max_points * length_factor
+
+    # Smart rounding: ensure small messages have at least +/-1 effect
+    if raw_score > 0:
+        score = max(1, round(raw_score))
+    elif raw_score < 0:
+        score = min(-1, round(raw_score))
+    else:
+        score = 0
+    return score
+
 def positive_score(message) -> int: 
     score = 0
 
@@ -117,6 +147,6 @@ def negative_score(message) -> int:
     return score
 
 def apply_rules(message) -> int:
-    positive_change, negative_change = positive_score(message), negative_score(message)
-    print(positive_change, negative_change)
-    return positive_change + negative_change
+    positive_change, negative_change, vader_change = positive_score(message), negative_score(message), vader_score(message)
+    print(positive_change, negative_change, vader_change)
+    return positive_change + negative_change + vader_change

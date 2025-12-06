@@ -36,16 +36,16 @@ class ScoringCog(commands.Cog):
 
         update_user_score(user.id, new_score) 
 
-        if new_score > max_score[1] and user.name != max_score[0]:
+        if new_score > max_score[1] and user.name != max_score[0] and random.randint(1,10) == 1:
             prompt = f"{user.name} has just surpassed {max_score[0]} and now has the MOST social credit points in the server!!"
             response = await self.ai_chat_manager.chat_with_history(prompt)
             await message.channel.send(response)
-        elif new_score < min_score[1] and user.name != min_score[0]:
+        elif new_score < min_score[1] and user.name != min_score[0] and random.randint(1,10) == 1:
             prompt = f"{user.name} has just surpassed {min_score[0]} and now has the LEAST social credit points in the server!!"
             response = await self.ai_chat_manager.chat_with_history(prompt)
             await message.channel.send(response)
 
-        if score_change >= 15 or score_change <= -15 or random.randint(1,20) == 1:
+        if score_change >= 35 or score_change <= -35 or random.randint(1,30) == 1:
             prompt = f"{user.name}: {message.content}, message score: {score_change}"
             response = await self.ai_chat_manager.chat_with_history(prompt)
             await message.channel.send(response)
