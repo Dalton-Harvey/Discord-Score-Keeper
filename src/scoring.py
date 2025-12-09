@@ -31,21 +31,24 @@ class ScoringCog(commands.Cog):
         new_score = old_score + score_change
         print("New User Score:", new_score)
 
+        #find the users with the highest and lowest score
         min_score, max_score = get_highest_and_lowest()
         print(f"Max Score: {max_score}, Min Score: {min_score}")
 
         update_user_score(user.id, new_score) 
 
-        if new_score > max_score[1] and user.name != max_score[0] and random.randint(1,10) == 1:
+        #if the user surpasses the highest or lowest scores have the AI respond
+        if new_score > max_score[1] and user.name != max_score[0] and random.randint(1,5) == 1:
             prompt = f"{user.name} has just surpassed {max_score[0]} and now has the MOST social credit points in the server!!"
             response = await self.ai_chat_manager.chat_with_history(prompt)
             await message.channel.send(response)
-        elif new_score < min_score[1] and user.name != min_score[0] and random.randint(1,10) == 1:
+        elif new_score < min_score[1] and user.name != min_score[0] and random.randint(1,5) == 1:
             prompt = f"{user.name} has just surpassed {min_score[0]} and now has the LEAST social credit points in the server!!"
             response = await self.ai_chat_manager.chat_with_history(prompt)
             await message.channel.send(response)
 
-        if score_change >= 35 or score_change <= -35 or random.randint(1,30) == 1:
+        #if a message is particularly positive or negative have the AI respond
+        if score_change >= 35 or score_change <= -35 or random.randint(1, 15) == 1:
             prompt = f"{user.name}: {message.content}, message score: {score_change}"
             response = await self.ai_chat_manager.chat_with_history(prompt)
             await message.channel.send(response)

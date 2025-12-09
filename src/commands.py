@@ -2,6 +2,7 @@ import discord
 import random
 from discord.ext import commands
 from src.storage import get_users_score, get_user_score, update_user_score
+from config import ADMIN_ID_LIST
 
 class CommandsCog(commands.Cog):
     def __init__(self, bot, ai_client):
@@ -10,6 +11,10 @@ class CommandsCog(commands.Cog):
 
     @commands.command(name="ListScores")
     async def list_scores(self, ctx):
+        if ctx.author.id not in ADMIN_ID_LIST:
+            await ctx.send("You are not an Admin")
+            return
+
         guild = ctx.guild
         
         # Collect all member IDs except bots
